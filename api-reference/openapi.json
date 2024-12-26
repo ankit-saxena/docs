@@ -1,72 +1,360 @@
 {
-  "openapi": "3.0.1",
+  "openapi": "3.1.0",
   "info": {
-    "title": "OpenAPI Plant Store",
-    "description": "A sample API that uses a plant store as an example to demonstrate features in the OpenAPI specification",
-    "license": {
-      "name": "MIT"
-    },
+    "title": "ThenaCrew",
+    "description": "\n    ThenaCrew AI CRM Renewal System\n    \n    An intelligent platform to automate customer renewal insights and communications through multi-agent workflows.\n    \n    Key Features:\n    * AI-powered renewal analysis\n    * Personalized communication generation\n    * Automated opportunity tracking\n    * Multi-agent workflow orchestration\n    ",
     "version": "1.0.0"
   },
-  "servers": [
-    {
-      "url": "http://sandbox.mintlify.com"
-    }
-  ],
-  "security": [
-    {
-      "bearerAuth": []
-    }
-  ],
   "paths": {
-    "/plants": {
+    "/api/v1/auth/signup": {
+      "post": {
+        "tags": ["Auth", "Auth"],
+        "summary": "Signup",
+        "description": "Handle user signup.",
+        "operationId": "signup_api_v1_auth_signup_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/SignUpRequest" }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": { "application/json": { "schema": {} } }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/signin": {
+      "post": {
+        "tags": ["Auth", "Auth"],
+        "summary": "Signin",
+        "description": "Handle user signin.",
+        "operationId": "signin_api_v1_auth_signin_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/SignInRequest" }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": { "application/json": { "schema": {} } }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/me": {
       "get": {
-        "description": "Returns all plants from the system that the user has access to",
+        "tags": ["Auth", "Auth"],
+        "summary": "Get Current User",
+        "description": "Get current user details.",
+        "operationId": "get_current_user_api_v1_auth_me_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": { "application/json": { "schema": {} } }
+          }
+        },
+        "security": [{ "HTTPBearer": [] }]
+      }
+    },
+    "/api/v1/auth/signup/callback": {
+      "post": {
+        "tags": ["Auth", "Auth"],
+        "summary": "Signup Callback",
+        "description": "Handle user signup callback from Supabase Auth.",
+        "operationId": "signup_callback_api_v1_auth_signup_callback_post",
         "parameters": [
           {
-            "name": "limit",
+            "name": "user_id",
             "in": "query",
-            "description": "The maximum number of results to return",
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
+            "required": true,
+            "schema": { "type": "string", "title": "User Id" }
+          },
+          {
+            "name": "email",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "string", "title": "Email" }
+          },
+          {
+            "name": "full_name",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "string", "title": "Full Name" }
           }
         ],
         "responses": {
           "200": {
-            "description": "Plant response",
+            "description": "Successful Response",
+            "content": { "application/json": { "schema": {} } }
+          },
+          "422": {
+            "description": "Validation Error",
             "content": {
               "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Plant"
-                  }
-                }
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/domains": {
+      "post": {
+        "tags": ["Auth", "Auth"],
+        "summary": "Add Domain",
+        "description": "Add a new domain to an organization.",
+        "operationId": "add_domain_api_v1_auth_domains_post",
+        "security": [{ "HTTPBearer": [] }, { "HTTPBearer": [] }],
+        "parameters": [
+          {
+            "name": "domain",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "string", "title": "Domain" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/OrganizationDomain" }
               }
             }
           },
-          "400": {
-            "description": "Unexpected error",
+          "422": {
+            "description": "Validation Error",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
               }
             }
           }
         }
       },
+      "get": {
+        "tags": ["Auth", "Auth"],
+        "summary": "List Domains",
+        "description": "List all domains for an organization.",
+        "operationId": "list_domains_api_v1_auth_domains_get",
+        "security": [{ "HTTPBearer": [] }, { "HTTPBearer": [] }],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/OrganizationDomain"
+                  },
+                  "title": "Response List Domains Api V1 Auth Domains Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/members": {
       "post": {
-        "description": "Creates a new plant in the store",
+        "tags": ["Auth", "Auth"],
+        "summary": "Add Member",
+        "description": "Add a new member to an organization.",
+        "operationId": "add_member_api_v1_auth_members_post",
+        "security": [{ "HTTPBearer": [] }, { "HTTPBearer": [] }],
+        "parameters": [
+          {
+            "name": "email",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "string", "title": "Email" }
+          },
+          {
+            "name": "role",
+            "in": "query",
+            "required": true,
+            "schema": { "$ref": "#/components/schemas/UserRole" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/OrganizationMember" }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": ["Auth", "Auth"],
+        "summary": "List Members",
+        "description": "List all members of an organization.",
+        "operationId": "list_members_api_v1_auth_members_get",
+        "security": [{ "HTTPBearer": [] }, { "HTTPBearer": [] }],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/OrganizationMember"
+                  },
+                  "title": "Response List Members Api V1 Auth Members Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/api-keys": {
+      "post": {
+        "tags": ["Auth", "Auth"],
+        "summary": "Create Api Key",
+        "description": "Create a new API key for an organization.",
+        "operationId": "create_api_key_api_v1_auth_api_keys_post",
+        "security": [{ "HTTPBearer": [] }, { "HTTPBearer": [] }],
+        "parameters": [
+          {
+            "name": "name",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "string", "title": "Name" }
+          }
+        ],
         "requestBody": {
-          "description": "Plant to add to the store",
+          "required": true,
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/NewPlant"
+                "type": "array",
+                "items": { "$ref": "#/components/schemas/ApiKeyScope" },
+                "title": "Scopes"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ApiKey" }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": ["Auth", "Auth"],
+        "summary": "List Api Keys",
+        "description": "List all API keys for an organization.",
+        "operationId": "list_api_keys_api_v1_auth_api_keys_get",
+        "security": [{ "HTTPBearer": [] }, { "HTTPBearer": [] }],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/ApiKey" },
+                  "title": "Response List Api Keys Api V1 Auth Api Keys Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/auth/api-keys/{key_id}": {
+      "delete": {
+        "tags": ["Auth", "Auth"],
+        "summary": "Delete Api Key",
+        "description": "Delete an API key.",
+        "operationId": "delete_api_key_api_v1_auth_api_keys__key_id__delete",
+        "security": [{ "HTTPBearer": [] }, { "HTTPBearer": [] }],
+        "parameters": [
+          {
+            "name": "key_id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "title": "Key Id" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": { "application/json": { "schema": {} } }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/organizations/user": {
+      "post": {
+        "tags": ["Organizations", "Organizations"],
+        "summary": "Create User Organization",
+        "description": "Create an organization for a user or assign them to an existing one based on email domain.",
+        "operationId": "create_user_organization_api_v1_organizations_user_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserOrganizationCreate"
               }
             }
           },
@@ -74,57 +362,2595 @@
         },
         "responses": {
           "200": {
-            "description": "plant response",
+            "description": "Successful Response",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Plant"
+                  "type": "object",
+                  "title": "Response Create User Organization Api V1 Organizations User Post"
                 }
               }
             }
           },
-          "400": {
-            "description": "unexpected error",
+          "422": {
+            "description": "Validation Error",
             "content": {
               "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Error"
-                }
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
               }
             }
           }
         }
       }
     },
-    "/plants/{id}": {
-      "delete": {
-        "description": "Deletes a single plant based on the ID supplied",
+    "/api/v1/organizations": {
+      "get": {
+        "tags": ["Organizations", "Organizations"],
+        "summary": "List Organizations",
+        "description": "List all organizations the current user has access to.",
+        "operationId": "list_organizations_api_v1_organizations_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": { "$ref": "#/components/schemas/Organization" },
+                  "type": "array",
+                  "title": "Response List Organizations Api V1 Organizations Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [{ "HTTPBearer": [] }]
+      },
+      "post": {
+        "tags": ["Organizations", "Organizations"],
+        "summary": "Create Organization",
+        "description": "Create a new organization.",
+        "operationId": "create_organization_api_v1_organizations_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/OrganizationCreate" }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Organization" }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        },
+        "security": [{ "HTTPBearer": [] }]
+      }
+    },
+    "/api/v1/organizations/current": {
+      "get": {
+        "tags": ["Organizations", "Organizations"],
+        "summary": "Get Organization",
+        "description": "Get the current organization.",
+        "operationId": "get_organization_api_v1_organizations_current_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Organization" }
+              }
+            }
+          }
+        },
+        "security": [{ "HTTPBearer": [] }, { "HTTPBearer": [] }]
+      }
+    },
+    "/api/v1/organizations/current/hubspot": {
+      "post": {
+        "tags": ["Organizations", "Organizations"],
+        "summary": "Connect Hubspot",
+        "description": "Connect organization to Hubspot.",
+        "operationId": "connect_hubspot_api_v1_organizations_current_hubspot_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/HubspotConnect" }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "title": "Response Connect Hubspot Api V1 Organizations Current Hubspot Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        },
+        "security": [{ "HTTPBearer": [] }, { "HTTPBearer": [] }]
+      }
+    },
+    "/api/v1/crm/accounts": {
+      "get": {
+        "tags": ["CRM"],
+        "summary": "List Accounts",
+        "operationId": "list_accounts_api_v1_crm_accounts_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": { "$ref": "#/components/schemas/Account" },
+                  "type": "array",
+                  "title": "Response List Accounts Api V1 Crm Accounts Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [{ "HTTPBearer": [] }]
+      }
+    },
+    "/api/v1/crm/accounts/{account_id}": {
+      "get": {
+        "tags": ["CRM"],
+        "summary": "Get Account",
+        "operationId": "get_account_api_v1_crm_accounts__account_id__get",
+        "security": [{ "HTTPBearer": [] }],
         "parameters": [
           {
-            "name": "id",
+            "name": "account_id",
             "in": "path",
-            "description": "ID of plant to delete",
             "required": true,
+            "schema": { "type": "string", "title": "Account Id" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Account" }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/crm/contacts": {
+      "get": {
+        "tags": ["CRM"],
+        "summary": "List Contacts",
+        "operationId": "list_contacts_api_v1_crm_contacts_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": { "$ref": "#/components/schemas/Contact" },
+                  "type": "array",
+                  "title": "Response List Contacts Api V1 Crm Contacts Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [{ "HTTPBearer": [] }]
+      }
+    },
+    "/api/v1/crm/contacts/{contact_id}": {
+      "get": {
+        "tags": ["CRM"],
+        "summary": "Get Contact",
+        "operationId": "get_contact_api_v1_crm_contacts__contact_id__get",
+        "security": [{ "HTTPBearer": [] }],
+        "parameters": [
+          {
+            "name": "contact_id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "title": "Contact Id" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Contact" }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/crm/opportunities": {
+      "get": {
+        "tags": ["CRM"],
+        "summary": "List Opportunities",
+        "operationId": "list_opportunities_api_v1_crm_opportunities_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": { "$ref": "#/components/schemas/Opportunity" },
+                  "type": "array",
+                  "title": "Response List Opportunities Api V1 Crm Opportunities Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [{ "HTTPBearer": [] }]
+      }
+    },
+    "/api/v1/crm/opportunities/{opportunity_id}": {
+      "get": {
+        "tags": ["CRM"],
+        "summary": "Get Opportunity",
+        "operationId": "get_opportunity_api_v1_crm_opportunities__opportunity_id__get",
+        "security": [{ "HTTPBearer": [] }],
+        "parameters": [
+          {
+            "name": "opportunity_id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "title": "Opportunity Id" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Opportunity" }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/crm/tickets": {
+      "get": {
+        "tags": ["CRM"],
+        "summary": "List Tickets",
+        "operationId": "list_tickets_api_v1_crm_tickets_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": { "$ref": "#/components/schemas/Ticket" },
+                  "type": "array",
+                  "title": "Response List Tickets Api V1 Crm Tickets Get"
+                }
+              }
+            }
+          }
+        },
+        "security": [{ "HTTPBearer": [] }]
+      },
+      "post": {
+        "tags": ["CRM"],
+        "summary": "Create Ticket",
+        "operationId": "create_ticket_api_v1_crm_tickets_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/Ticket" }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Ticket" }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        },
+        "security": [{ "HTTPBearer": [] }]
+      }
+    },
+    "/api/v1/crm/tickets/{ticket_id}": {
+      "get": {
+        "tags": ["CRM"],
+        "summary": "Get Ticket",
+        "operationId": "get_ticket_api_v1_crm_tickets__ticket_id__get",
+        "security": [{ "HTTPBearer": [] }],
+        "parameters": [
+          {
+            "name": "ticket_id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "title": "Ticket Id" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Ticket" }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": ["CRM"],
+        "summary": "Update Ticket",
+        "operationId": "update_ticket_api_v1_crm_tickets__ticket_id__put",
+        "security": [{ "HTTPBearer": [] }],
+        "parameters": [
+          {
+            "name": "ticket_id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "title": "Ticket Id" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/Ticket" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Ticket" }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["CRM"],
+        "summary": "Delete Ticket",
+        "operationId": "delete_ticket_api_v1_crm_tickets__ticket_id__delete",
+        "security": [{ "HTTPBearer": [] }],
+        "parameters": [
+          {
+            "name": "ticket_id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "title": "Ticket Id" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": { "application/json": { "schema": {} } }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/crm/sync": {
+      "post": {
+        "tags": ["CRM"],
+        "summary": "Sync Crm Data",
+        "operationId": "sync_crm_data_api_v1_crm_sync_post",
+        "responses": {
+          "202": {
+            "description": "Successful Response",
+            "content": { "application/json": { "schema": {} } }
+          }
+        },
+        "security": [{ "HTTPBearer": [] }]
+      }
+    },
+    "/api/v1/agents/agent-templates": {
+      "get": {
+        "tags": ["Agents", "Agents"],
+        "summary": "List Agent Templates",
+        "description": "List all available agent templates",
+        "operationId": "list_agent_templates_api_v1_agents_agent_templates_get",
+        "security": [{ "HTTPBearer": [] }],
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
             "schema": {
               "type": "integer",
-              "format": "int64"
+              "minimum": 1,
+              "description": "Page number",
+              "default": 1,
+              "title": "Page"
+            },
+            "description": "Page number"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "description": "Number of items per page",
+              "default": 10,
+              "title": "Limit"
+            },
+            "description": "Number of items per page"
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [{ "type": "string" }, { "type": "null" }],
+              "description": "Search term for filtering templates",
+              "title": "Search"
+            },
+            "description": "Search term for filtering templates"
+          },
+          {
+            "name": "category",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [{ "type": "string" }, { "type": "null" }],
+              "description": "Filter by template category",
+              "title": "Category"
+            },
+            "description": "Filter by template category"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of agent templates",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AgentTemplate-Input"
+                  },
+                  "title": "Response 200 List Agent Templates Api V1 Agents Agent Templates Get"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or missing JWT token"
+          },
+          "403": { "description": "Forbidden - Insufficient permissions" },
+          "404": { "description": "Not found" },
+          "500": { "description": "Internal server error" },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/agents/agent-templates/{template_id}": {
+      "get": {
+        "tags": ["Agents", "Agents"],
+        "summary": "Get Agent Template",
+        "description": "Get specific agent template details",
+        "operationId": "get_agent_template_api_v1_agents_agent_templates__template_id__get",
+        "security": [{ "HTTPBearer": [] }],
+        "parameters": [
+          {
+            "name": "template_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Template Id"
+            }
+          },
+          {
+            "name": "yaml",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "description": "Return template in YAML format",
+              "default": false,
+              "title": "Yaml"
+            },
+            "description": "Return template in YAML format"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Agent template details",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/AgentTemplate-Input" }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or missing JWT token"
+          },
+          "403": { "description": "Forbidden - Insufficient permissions" },
+          "404": { "description": "Not Found - Agent template not found" },
+          "500": { "description": "Internal server error" },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/agents/": {
+      "post": {
+        "tags": ["Agents", "Agents"],
+        "summary": "Create Agent",
+        "description": "Hire/instantiate an agent",
+        "operationId": "create_agent_api_v1_agents__post",
+        "security": [{ "HTTPBearer": [] }, { "HTTPBearer": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/AgentCreate" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Agent created successfully",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Agent-Input" }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or missing JWT token"
+          },
+          "403": { "description": "Forbidden - Insufficient permissions" },
+          "404": { "description": "Not Found - Agent template not found" },
+          "500": { "description": "Internal server error" },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": ["Agents", "Agents"],
+        "summary": "List Agents",
+        "description": "List organization's hired agents",
+        "operationId": "list_agents_api_v1_agents__get",
+        "security": [{ "HTTPBearer": [] }, { "HTTPBearer": [] }],
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [{ "type": "string" }, { "type": "null" }],
+              "description": "Filter agents by status",
+              "title": "Status"
+            },
+            "description": "Filter agents by status"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "description": "Page number",
+              "default": 1,
+              "title": "Page"
+            },
+            "description": "Page number"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "description": "Number of items per page",
+              "default": 10,
+              "title": "Limit"
+            },
+            "description": "Number of items per page"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of agents",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/Agent-Input" },
+                  "title": "Response 200 List Agents Api V1 Agents  Get"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or missing JWT token"
+          },
+          "403": { "description": "Forbidden - Insufficient permissions" },
+          "404": { "description": "Not found" },
+          "500": { "description": "Internal server error" },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/agents/{agent_id}": {
+      "get": {
+        "tags": ["Agents", "Agents"],
+        "summary": "Get Agent",
+        "description": "Get specific agent details",
+        "operationId": "get_agent_api_v1_agents__agent_id__get",
+        "security": [{ "HTTPBearer": [] }, { "HTTPBearer": [] }],
+        "parameters": [
+          {
+            "name": "agent_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Agent Id"
             }
           }
         ],
         "responses": {
-          "204": {
-            "description": "Plant deleted",
-            "content": {}
+          "200": {
+            "description": "Agent details",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Agent-Input" }
+              }
+            }
           },
-          "400": {
-            "description": "unexpected error",
+          "401": {
+            "description": "Unauthorized - Invalid or missing JWT token"
+          },
+          "403": { "description": "Forbidden - Insufficient permissions" },
+          "404": { "description": "Not Found - Agent not found" },
+          "500": { "description": "Internal server error" },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": ["Agents", "Agents"],
+        "summary": "Update Agent",
+        "description": "Update agent configuration or status",
+        "operationId": "update_agent_api_v1_agents__agent_id__patch",
+        "security": [{ "HTTPBearer": [] }, { "HTTPBearer": [] }],
+        "parameters": [
+          {
+            "name": "agent_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Agent Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/AgentUpdate" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Agent updated successfully",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Agent-Input" }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or missing JWT token"
+          },
+          "403": { "description": "Forbidden - Insufficient permissions" },
+          "404": { "description": "Not Found - Agent not found" },
+          "500": { "description": "Internal server error" },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/agents/agent-templates/{template_id}/flows": {
+      "get": {
+        "tags": ["Agents", "Agents"],
+        "summary": "List Template Flows",
+        "description": "Get all flows available to the agent template",
+        "operationId": "list_template_flows_api_v1_agents_agent_templates__template_id__flows_get",
+        "security": [{ "HTTPBearer": [] }],
+        "parameters": [
+          {
+            "name": "template_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Template Id"
+            }
+          },
+          {
+            "name": "yaml",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "description": "Return flows in YAML format",
+              "default": false,
+              "title": "Yaml"
+            },
+            "description": "Return flows in YAML format"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of flows",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Error"
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/Flow" },
+                  "title": "Response 200 List Template Flows Api V1 Agents Agent Templates  Template Id  Flows Get"
                 }
               }
             }
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or missing JWT token"
+          },
+          "403": { "description": "Forbidden - Insufficient permissions" },
+          "404": { "description": "Not found" },
+          "500": { "description": "Internal server error" },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/agents/{agent_id}/flows/{flow_id}/execute": {
+      "post": {
+        "tags": ["Agents", "Agents"],
+        "summary": "Execute Flow",
+        "description": "Start new flow execution",
+        "operationId": "execute_flow_api_v1_agents__agent_id__flows__flow_id__execute_post",
+        "security": [{ "HTTPBearer": [] }, { "HTTPBearer": [] }],
+        "parameters": [
+          {
+            "name": "agent_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Agent Id"
+            }
+          },
+          {
+            "name": "flow_id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid", "title": "Flow Id" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/FlowExecuteRequest" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Flow execution created successfully",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/FlowExecution" }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or missing JWT token"
+          },
+          "403": { "description": "Forbidden - Insufficient permissions" },
+          "404": { "description": "Not Found - Agent or flow not found" },
+          "500": { "description": "Internal server error" },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/agents/{agent_id}/flows": {
+      "get": {
+        "tags": ["Agents", "Agents"],
+        "summary": "List Flow Executions",
+        "description": "List flow executions for an agent",
+        "operationId": "list_flow_executions_api_v1_agents__agent_id__flows_get",
+        "security": [{ "HTTPBearer": [] }, { "HTTPBearer": [] }],
+        "parameters": [
+          {
+            "name": "agent_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Agent Id"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [{ "type": "string" }, { "type": "null" }],
+              "description": "Filter flow executions by status",
+              "title": "Status"
+            },
+            "description": "Filter flow executions by status"
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "description": "Page number",
+              "default": 1,
+              "title": "Page"
+            },
+            "description": "Page number"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "description": "Number of items per page",
+              "default": 10,
+              "title": "Limit"
+            },
+            "description": "Number of items per page"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of flow executions",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/FlowExecution" },
+                  "title": "Response 200 List Flow Executions Api V1 Agents  Agent Id  Flows Get"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or missing JWT token"
+          },
+          "403": { "description": "Forbidden - Insufficient permissions" },
+          "404": { "description": "Not found" },
+          "500": { "description": "Internal server error" },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/agents/flows/{execution_id}": {
+      "get": {
+        "tags": ["Agents", "Agents"],
+        "summary": "Get Flow Execution",
+        "description": "Get flow execution details",
+        "operationId": "get_flow_execution_api_v1_agents_flows__execution_id__get",
+        "security": [{ "HTTPBearer": [] }, { "HTTPBearer": [] }],
+        "parameters": [
+          {
+            "name": "execution_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Execution Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Flow execution details",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/FlowExecution" }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or missing JWT token"
+          },
+          "403": { "description": "Forbidden - Insufficient permissions" },
+          "404": { "description": "Not Found - Flow execution not found" },
+          "500": { "description": "Internal server error" },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/agents/{agent_id}/files": {
+      "get": {
+        "tags": ["Agents", "Agents"],
+        "summary": "List Agent Files",
+        "description": "List all files associated with an agent. Returns file metadata including name, size, and type.",
+        "operationId": "list_agent_files_api_v1_agents__agent_id__files_get",
+        "security": [{ "HTTPBearer": [] }, { "HTTPBearer": [] }],
+        "parameters": [
+          {
+            "name": "agent_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Agent Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of files associated with the agent",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/AgentFile" },
+                  "title": "Response List Agent Files Api V1 Agents  Agent Id  Files Get"
+                },
+                "example": [
+                  {
+                    "id": "123e4567-e89b-12d3-a456-426614174000",
+                    "name": "document.pdf",
+                    "size": 1024,
+                    "mime_type": "application/pdf",
+                    "metadata": { "processing_status": "completed" },
+                    "created_at": "2024-12-18T12:00:00Z"
+                  }
+                ]
+              }
+            }
+          },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden - Insufficient permissions" },
+          "404": { "description": "Agent not found" },
+          "500": { "description": "Internal server error" },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["Agents", "Agents"],
+        "summary": "Upload Agent File",
+        "description": "Upload a file for an agent. The file will be stored in Supabase storage and its content will be processed for search.\n    Supported file types: PDF, DOC, DOCX, TXT, and images.\n    Maximum file size: 10MB.",
+        "operationId": "upload_agent_file_api_v1_agents__agent_id__files_post",
+        "security": [{ "HTTPBearer": [] }, { "HTTPBearer": [] }],
+        "parameters": [
+          {
+            "name": "agent_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Agent Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_upload_agent_file_api_v1_agents__agent_id__files_post"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "File uploaded successfully",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/AgentFile" },
+                "example": {
+                  "id": "123e4567-e89b-12d3-a456-426614174000",
+                  "name": "document.pdf",
+                  "size": 1024,
+                  "mime_type": "application/pdf",
+                  "metadata": { "processing_status": "processing" },
+                  "created_at": "2024-12-18T12:00:00Z"
+                }
+              }
+            }
+          },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden - Insufficient permissions" },
+          "404": { "description": "Agent not found" },
+          "500": { "description": "Internal server error" },
+          "400": { "description": "Invalid file type or size" },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/agents/{agent_id}/files/{file_id}": {
+      "get": {
+        "tags": ["Agents", "Agents"],
+        "summary": "Get Agent File",
+        "description": "Get details of a specific file associated with an agent.",
+        "operationId": "get_agent_file_api_v1_agents__agent_id__files__file_id__get",
+        "security": [{ "HTTPBearer": [] }, { "HTTPBearer": [] }],
+        "parameters": [
+          {
+            "name": "agent_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Agent Id"
+            }
+          },
+          {
+            "name": "file_id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid", "title": "File Id" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "File details",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/AgentFile" },
+                "example": {
+                  "id": "123e4567-e89b-12d3-a456-426614174000",
+                  "name": "document.pdf",
+                  "size": 1024,
+                  "mime_type": "application/pdf",
+                  "metadata": { "processing_status": "completed" },
+                  "created_at": "2024-12-18T12:00:00Z"
+                }
+              }
+            }
+          },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden - Insufficient permissions" },
+          "404": { "description": "File or agent not found" },
+          "500": { "description": "Internal server error" },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Agents", "Agents"],
+        "summary": "Delete Agent File",
+        "description": "Delete a file and its associated embeddings from the agent.",
+        "operationId": "delete_agent_file_api_v1_agents__agent_id__files__file_id__delete",
+        "security": [{ "HTTPBearer": [] }, { "HTTPBearer": [] }],
+        "parameters": [
+          {
+            "name": "agent_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Agent Id"
+            }
+          },
+          {
+            "name": "file_id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid", "title": "File Id" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "File deleted successfully",
+            "content": { "application/json": { "schema": {} } }
+          },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden - Insufficient permissions" },
+          "404": { "description": "File or agent not found" },
+          "500": { "description": "Internal server error" },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/agents/{agent_id}/files/search": {
+      "get": {
+        "tags": ["Agents", "Agents"],
+        "summary": "Search Agent Files",
+        "description": "Search through the content of agent files using semantic similarity.\n    Returns chunks of text from files that are most similar to the search query.",
+        "operationId": "search_agent_files_api_v1_agents__agent_id__files_search_get",
+        "security": [{ "HTTPBearer": [] }, { "HTTPBearer": [] }],
+        "parameters": [
+          {
+            "name": "agent_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Agent Id"
+            }
+          },
+          {
+            "name": "query",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "minLength": 1,
+              "description": "Search query text",
+              "title": "Query"
+            },
+            "description": "Search query text"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 20,
+              "minimum": 1,
+              "description": "Maximum number of results to return",
+              "default": 5,
+              "title": "Limit"
+            },
+            "description": "Maximum number of results to return"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Search results",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/FileSearchResult" },
+                  "title": "Response Search Agent Files Api V1 Agents  Agent Id  Files Search Get"
+                },
+                "example": [
+                  {
+                    "file": {
+                      "id": "123e4567-e89b-12d3-a456-426614174000",
+                      "name": "document.pdf"
+                    },
+                    "chunk_text": "Relevant text from the file...",
+                    "similarity": 0.85
+                  }
+                ]
+              }
+            }
+          },
+          "401": { "description": "Unauthorized" },
+          "403": { "description": "Forbidden - Insufficient permissions" },
+          "404": { "description": "Agent not found" },
+          "500": { "description": "Internal server error" },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/agents/{agent_id}/url": {
+      "post": {
+        "tags": ["Agents", "Agents"],
+        "summary": "Add URL to Agent",
+        "description": "Add a URL to an agent's knowledge base",
+        "operationId": "add_url_to_agent_api_v1_agents__agent_id__url_post",
+        "security": [{ "HTTPBearer": [] }, { "HTTPBearer": [] }],
+        "parameters": [
+          {
+            "name": "agent_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Agent Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "type": "object", "title": "Url Data" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/AgentFile" }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or missing JWT token"
+          },
+          "403": { "description": "Forbidden - Insufficient permissions" },
+          "404": { "description": "Not found" },
+          "500": { "description": "Internal server error" },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/agents/{agent_id}/chat": {
+      "get": {
+        "tags": ["Agents", "Agents"],
+        "summary": "List Chat Threads",
+        "description": "Returns all chat threads for the authenticated user and specified agent",
+        "operationId": "list_chat_threads_api_v1_agents__agent_id__chat_get",
+        "security": [{ "HTTPBearer": [] }, { "HTTPBearer": [] }],
+        "parameters": [
+          {
+            "name": "agent_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "anyOf": [
+                { "type": "string", "format": "uuid" },
+                { "type": "null" }
+              ],
+              "title": "Agent Id"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 50,
+              "minimum": 1,
+              "description": "Number of threads to return",
+              "default": 10,
+              "title": "Limit"
+            },
+            "description": "Number of threads to return"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "description": "Number of threads to skip",
+              "default": 0,
+              "title": "Offset"
+            },
+            "description": "Number of threads to skip"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/ChatThread" },
+                  "title": "Response List Chat Threads Api V1 Agents  Agent Id  Chat Get"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or missing JWT token"
+          },
+          "403": { "description": "Forbidden - Insufficient permissions" },
+          "404": { "description": "Not found" },
+          "500": { "description": "Internal server error" },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["Agents", "Agents"],
+        "summary": "Create Chat Thread",
+        "description": "Creates a new chat thread for the authenticated user and specified agent",
+        "operationId": "create_chat_thread_api_v1_agents__agent_id__chat_post",
+        "security": [{ "HTTPBearer": [] }, { "HTTPBearer": [] }],
+        "parameters": [
+          {
+            "name": "agent_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "anyOf": [
+                { "type": "string", "format": "uuid" },
+                { "type": "null" }
+              ],
+              "title": "Agent Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/ChatThreadCreate" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ChatThread" }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or missing JWT token"
+          },
+          "403": { "description": "Forbidden - Insufficient permissions" },
+          "404": { "description": "Not found" },
+          "500": { "description": "Internal server error" },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/agents/{agent_id}/chat/{thread_id}": {
+      "get": {
+        "tags": ["Agents", "Agents"],
+        "summary": "Get Chat Thread",
+        "description": "Returns the chat thread with messages for the specified thread ID",
+        "operationId": "get_chat_thread_api_v1_agents__agent_id__chat__thread_id__get",
+        "security": [{ "HTTPBearer": [] }, { "HTTPBearer": [] }],
+        "parameters": [
+          {
+            "name": "agent_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "anyOf": [
+                { "type": "string", "format": "uuid" },
+                { "type": "null" }
+              ],
+              "title": "Agent Id"
+            }
+          },
+          {
+            "name": "thread_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Thread Id"
+            }
+          },
+          {
+            "name": "message_limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "description": "Number of messages to return",
+              "default": 50,
+              "title": "Message Limit"
+            },
+            "description": "Number of messages to return"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ChatThread" }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or missing JWT token"
+          },
+          "403": { "description": "Forbidden - Insufficient permissions" },
+          "404": { "description": "Not found" },
+          "500": { "description": "Internal server error" },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/agents/{agent_id}/chat/{thread_id}/messages": {
+      "post": {
+        "tags": ["Agents", "Agents"],
+        "summary": "Add Chat Message",
+        "description": "Adds a new message to the specified chat thread",
+        "operationId": "add_chat_message_api_v1_agents__agent_id__chat__thread_id__messages_post",
+        "security": [{ "HTTPBearer": [] }, { "HTTPBearer": [] }],
+        "parameters": [
+          {
+            "name": "agent_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "anyOf": [
+                { "type": "string", "format": "uuid" },
+                { "type": "null" }
+              ],
+              "title": "Agent Id"
+            }
+          },
+          {
+            "name": "thread_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Thread Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/ChatMessageCreate" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/ChatMessage" }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or missing JWT token"
+          },
+          "403": { "description": "Forbidden - Insufficient permissions" },
+          "404": { "description": "Not found" },
+          "500": { "description": "Internal server error" },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": ["Agents", "Agents"],
+        "summary": "List Chat Messages",
+        "description": "Get all messages for a specific chat thread",
+        "operationId": "list_chat_messages_api_v1_agents__agent_id__chat__thread_id__messages_get",
+        "security": [{ "HTTPBearer": [] }, { "HTTPBearer": [] }],
+        "parameters": [
+          {
+            "name": "agent_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "anyOf": [
+                { "type": "string", "format": "uuid" },
+                { "type": "null" }
+              ],
+              "title": "Agent Id"
+            }
+          },
+          {
+            "name": "thread_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "description": "ID of the chat thread",
+              "title": "Thread Id"
+            },
+            "description": "ID of the chat thread"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "description": "Number of messages to return",
+              "default": 50,
+              "title": "Limit"
+            },
+            "description": "Number of messages to return"
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "description": "Number of messages to skip",
+              "default": 0,
+              "title": "Offset"
+            },
+            "description": "Number of messages to skip"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of chat messages",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/ChatMessage" },
+                  "title": "Response 200 List Chat Messages Api V1 Agents  Agent Id  Chat  Thread Id  Messages Get"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or missing JWT token"
+          },
+          "403": { "description": "Forbidden - Insufficient permissions" },
+          "404": { "description": "Chat thread not found" },
+          "500": { "description": "Internal server error" },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/agents/{agent_id}/chat/{thread_id}/stream": {
+      "get": {
+        "tags": ["Agents", "Agents"],
+        "summary": "Stream Chat Messages",
+        "description": "Streams new messages for the specified chat thread using Server-Sent Events",
+        "operationId": "stream_chat_messages_api_v1_agents__agent_id__chat__thread_id__stream_get",
+        "security": [{ "HTTPBearer": [] }, { "HTTPBearer": [] }],
+        "parameters": [
+          {
+            "name": "agent_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "anyOf": [
+                { "type": "string", "format": "uuid" },
+                { "type": "null" }
+              ],
+              "title": "Agent Id"
+            }
+          },
+          {
+            "name": "thread_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Thread Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": { "application/json": { "schema": {} } }
+          },
+          "401": {
+            "description": "Unauthorized - Invalid or missing JWT token"
+          },
+          "403": { "description": "Forbidden - Insufficient permissions" },
+          "404": { "description": "Not found" },
+          "500": { "description": "Internal server error" },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/agents/{agent_id}/chat/{thread_id}/messages/stream": {
+      "post": {
+        "tags": ["Agents", "Agents"],
+        "summary": "Add Chat Message with Streaming Response",
+        "description": "Adds a new message to the specified chat thread and streams the AI response",
+        "operationId": "add_chat_message_stream_api_v1_agents__agent_id__chat__thread_id__messages_stream_post",
+        "security": [{ "HTTPBearer": [] }, { "HTTPBearer": [] }],
+        "parameters": [
+          {
+            "name": "agent_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "anyOf": [
+                { "type": "string", "format": "uuid" },
+                { "type": "null" }
+              ],
+              "title": "Agent Id"
+            }
+          },
+          {
+            "name": "thread_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Thread Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/ChatMessageCreate" }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Successful Response" },
+          "401": {
+            "description": "Unauthorized - Invalid or missing JWT token"
+          },
+          "403": { "description": "Forbidden - Insufficient permissions" },
+          "404": { "description": "Not found" },
+          "500": { "description": "Internal server error" },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/hubspot/hubspot/oauth/callback": {
+      "get": {
+        "tags": ["Hubspot", "Integrations"],
+        "summary": "Hubspot Oauth Callback",
+        "description": "Handle Hubspot OAuth callback.",
+        "operationId": "hubspot_oauth_callback_api_v1_hubspot_hubspot_oauth_callback_get",
+        "parameters": [
+          {
+            "name": "code",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "string", "title": "Code" }
+          },
+          {
+            "name": "organization_id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Organization Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": { "type": "string" },
+                  "title": "Response Hubspot Oauth Callback Api V1 Hubspot Hubspot Oauth Callback Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/integrations/hubspot/auth-url": {
+      "get": {
+        "tags": ["Integrations", "Integrations"],
+        "summary": "Get Hubspot Auth Url",
+        "description": "Get Hubspot authorization URL",
+        "operationId": "get_hubspot_auth_url_api_v1_integrations_hubspot_auth_url_get",
+        "parameters": [
+          {
+            "name": "organization_id",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "string", "title": "Organization Id" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": { "application/json": { "schema": {} } }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/integrations/hubspot/callback": {
+      "post": {
+        "tags": ["Integrations", "Integrations"],
+        "summary": "Hubspot Callback",
+        "description": "Handle Hubspot OAuth callback",
+        "operationId": "hubspot_callback_api_v1_integrations_hubspot_callback_post",
+        "parameters": [
+          {
+            "name": "code",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "string", "title": "Code" }
+          },
+          {
+            "name": "organization_id",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "string", "title": "Organization Id" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": { "application/json": { "schema": {} } }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/integrations/hubspot/sync/accounts": {
+      "post": {
+        "tags": ["Integrations", "Integrations"],
+        "summary": "Sync Hubspot Accounts",
+        "operationId": "sync_hubspot_accounts_api_v1_integrations_hubspot_sync_accounts_post",
+        "parameters": [
+          {
+            "name": "organization_id",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "string", "title": "Organization Id" }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": { "type": "string", "title": "Authorization" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": { "application/json": { "schema": {} } }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/integrations/hubspot/sync/opportunities": {
+      "post": {
+        "tags": ["Integrations", "Integrations"],
+        "summary": "Sync Hubspot Opportunities",
+        "description": "Sync opportunities from HubSpot to our system",
+        "operationId": "sync_hubspot_opportunities_api_v1_integrations_hubspot_sync_opportunities_post",
+        "parameters": [
+          {
+            "name": "organization_id",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "string", "title": "Organization Id" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": { "application/json": { "schema": {} } }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/integrations/hubspot/sync/contacts": {
+      "post": {
+        "tags": ["Integrations", "Integrations"],
+        "summary": "Sync Hubspot Contacts",
+        "operationId": "sync_hubspot_contacts_api_v1_integrations_hubspot_sync_contacts_post",
+        "parameters": [
+          {
+            "name": "organization_id",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "string", "title": "Organization Id" }
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "required": false,
+            "schema": { "type": "string", "title": "Authorization" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": { "application/json": { "schema": {} } }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/tools/categories": {
+      "post": {
+        "tags": ["Tools", "Tools"],
+        "summary": "Create Tool Category",
+        "description": "Create a new tool category.",
+        "operationId": "create_tool_category_api_v1_tools_categories_post",
+        "security": [{ "HTTPBearer": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateToolCategoryRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": { "application/json": { "schema": {} } }
+          },
+          "404": { "description": "Not found" },
+          "401": { "description": "Unauthorized" },
+          "500": { "description": "Internal server error" },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": ["Tools", "Tools"],
+        "summary": "List Tool Categories",
+        "description": "List all tool categories with pagination.",
+        "operationId": "list_tool_categories_api_v1_tools_categories_get",
+        "security": [{ "HTTPBearer": [] }],
+        "parameters": [
+          {
+            "name": "skip",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "description": "Number of categories to skip",
+              "default": 0,
+              "title": "Skip"
+            },
+            "description": "Number of categories to skip"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "description": "Maximum number of categories to return",
+              "default": 100,
+              "title": "Limit"
+            },
+            "description": "Maximum number of categories to return"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "type": "object" },
+                  "title": "Response List Tool Categories Api V1 Tools Categories Get"
+                }
+              }
+            }
+          },
+          "404": { "description": "Not found" },
+          "401": { "description": "Unauthorized" },
+          "500": { "description": "Internal server error" },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/tools/categories/{category_id}": {
+      "get": {
+        "tags": ["Tools", "Tools"],
+        "summary": "Get Tool Category",
+        "description": "Get a specific tool category by ID.",
+        "operationId": "get_tool_category_api_v1_tools_categories__category_id__get",
+        "security": [{ "HTTPBearer": [] }],
+        "parameters": [
+          {
+            "name": "category_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "uuid",
+              "title": "Category Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": { "application/json": { "schema": {} } }
+          },
+          "404": { "description": "Not found" },
+          "401": { "description": "Unauthorized" },
+          "500": { "description": "Internal server error" },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/tools/organization": {
+      "get": {
+        "tags": ["Tools", "Tools"],
+        "summary": "List Organization Tools",
+        "description": "List all tools enabled for an organization.",
+        "operationId": "list_organization_tools_api_v1_tools_organization_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": { "type": "object" },
+                  "type": "array",
+                  "title": "Response List Organization Tools Api V1 Tools Organization Get"
+                }
+              }
+            }
+          },
+          "404": { "description": "Not found" },
+          "401": { "description": "Unauthorized" },
+          "500": { "description": "Internal server error" }
+        },
+        "security": [{ "HTTPBearer": [] }]
+      },
+      "post": {
+        "tags": ["Tools", "Tools"],
+        "summary": "Create Organization Tool",
+        "description": "Enable a tool for an organization with optional configuration.",
+        "operationId": "create_organization_tool_api_v1_tools_organization_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/EnableToolRequest" }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": { "application/json": { "schema": {} } }
+          },
+          "404": { "description": "Not found" },
+          "401": { "description": "Unauthorized" },
+          "500": { "description": "Internal server error" },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        },
+        "security": [{ "HTTPBearer": [] }]
+      }
+    },
+    "/api/v1/tools/organization/{tool_id}": {
+      "get": {
+        "tags": ["Tools", "Tools"],
+        "summary": "Get Organization Tool",
+        "description": "Get configuration of a specific tool for an organization.",
+        "operationId": "get_organization_tool_api_v1_tools_organization__tool_id__get",
+        "security": [{ "HTTPBearer": [] }],
+        "parameters": [
+          {
+            "name": "tool_id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid", "title": "Tool Id" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": { "application/json": { "schema": {} } }
+          },
+          "404": { "description": "Not found" },
+          "401": { "description": "Unauthorized" },
+          "500": { "description": "Internal server error" },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": ["Tools", "Tools"],
+        "summary": "Update Organization Tool",
+        "description": "Update configuration of a specific tool for an organization.",
+        "operationId": "update_organization_tool_api_v1_tools_organization__tool_id__patch",
+        "security": [{ "HTTPBearer": [] }],
+        "parameters": [
+          {
+            "name": "tool_id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid", "title": "Tool Id" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "type": "object", "title": "Update Data" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": { "application/json": { "schema": {} } }
+          },
+          "404": { "description": "Not found" },
+          "401": { "description": "Unauthorized" },
+          "500": { "description": "Internal server error" },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/tools": {
+      "post": {
+        "tags": ["Tools", "Tools"],
+        "summary": "Create Tool",
+        "description": "Create a new tool.",
+        "operationId": "create_tool_api_v1_tools_post",
+        "security": [{ "HTTPBearer": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CreateToolRequest" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": { "application/json": { "schema": {} } }
+          },
+          "404": { "description": "Not found" },
+          "401": { "description": "Unauthorized" },
+          "500": { "description": "Internal server error" },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": ["Tools", "Tools"],
+        "summary": "List Tools",
+        "description": "List all tools with optional category filtering and pagination.",
+        "operationId": "list_tools_api_v1_tools_get",
+        "security": [{ "HTTPBearer": [] }],
+        "parameters": [
+          {
+            "name": "category_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                { "type": "string", "format": "uuid" },
+                { "type": "null" }
+              ],
+              "description": "Filter tools by category ID",
+              "title": "Category Id"
+            },
+            "description": "Filter tools by category ID"
+          },
+          {
+            "name": "skip",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "description": "Number of tools to skip",
+              "default": 0,
+              "title": "Skip"
+            },
+            "description": "Number of tools to skip"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "description": "Maximum number of tools to return",
+              "default": 100,
+              "title": "Limit"
+            },
+            "description": "Maximum number of tools to return"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/ToolResponse" },
+                  "title": "Response List Tools Api V1 Tools Get"
+                }
+              }
+            }
+          },
+          "404": { "description": "Not found" },
+          "401": { "description": "Unauthorized" },
+          "500": { "description": "Internal server error" },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/tools/{tool_id}": {
+      "get": {
+        "tags": ["Tools", "Tools"],
+        "summary": "Get Tool",
+        "description": "Get a specific tool by ID.",
+        "operationId": "get_tool_api_v1_tools__tool_id__get",
+        "security": [{ "HTTPBearer": [] }],
+        "parameters": [
+          {
+            "name": "tool_id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid", "title": "Tool Id" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": { "application/json": { "schema": {} } }
+          },
+          "404": { "description": "Not found" },
+          "401": { "description": "Unauthorized" },
+          "500": { "description": "Internal server error" },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": ["Tools", "Tools"],
+        "summary": "Update Tool",
+        "description": "Update a tool's information.",
+        "operationId": "update_tool_api_v1_tools__tool_id__patch",
+        "security": [{ "HTTPBearer": [] }],
+        "parameters": [
+          {
+            "name": "tool_id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string", "format": "uuid", "title": "Tool Id" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "type": "object", "title": "Tool Data" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": { "application/json": { "schema": {} } }
+          },
+          "404": { "description": "Not found" },
+          "401": { "description": "Unauthorized" },
+          "500": { "description": "Internal server error" },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HTTPValidationError" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/": {
+      "get": {
+        "tags": ["health"],
+        "summary": "Root",
+        "description": "Root endpoint to check application health.\n\nReturns:\n    dict: Basic information about the application including name, version and status.",
+        "operationId": "root__get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": { "application/json": { "schema": {} } }
+          }
+        }
+      }
+    },
+    "/health": {
+      "get": {
+        "tags": ["Health"],
+        "summary": "Health Check",
+        "operationId": "health_check_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": { "application/json": { "schema": {} } }
           }
         }
       }
@@ -132,64 +2958,1703 @@
   },
   "components": {
     "schemas": {
-      "Plant": {
-        "required": [
-          "name"
-        ],
+      "Account": {
+        "properties": {
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "updated_at": {
+            "anyOf": [
+              { "type": "string", "format": "date-time" },
+              { "type": "null" }
+            ],
+            "title": "Updated At"
+          },
+          "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "Account ID"
+          },
+          "organization_id": { "type": "string", "title": "Organization Id" },
+          "name": { "type": "string", "title": "Name" },
+          "description": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Description"
+          },
+          "industry": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Industry"
+          },
+          "website": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Website"
+          },
+          "hubspot_id": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Hubspot Id"
+          }
+        },
         "type": "object",
+        "required": ["id", "organization_id", "name"],
+        "title": "Account"
+      },
+      "Agent-Input": {
         "properties": {
           "name": {
-            "description": "The name of the plant",
-            "type": "string"
+            "type": "string",
+            "title": "Name",
+            "description": "Name of the agent"
           },
-          "tag": {
-            "description": "Tag to specify the type",
-            "type": "string"
-          }
-        }
-      },
-      "NewPlant": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/Plant"
+          "description": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Description",
+            "description": "Description of the agent's purpose and capabilities"
           },
-          {
-            "required": [
-              "id"
-            ],
+          "configuration": {
+            "$ref": "#/components/schemas/AgentConfig",
+            "description": "Agent-specific configuration settings"
+          },
+          "avatar_url": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Avatar Url",
+            "description": "URL of the agent's avatar image"
+          },
+          "metadata": {
             "type": "object",
-            "properties": {
-              "id": {
-                "description": "Identification number of the plant",
-                "type": "integer",
-                "format": "int64"
-              }
-            }
-          }
-        ]
-      },
-      "Error": {
-        "required": [
-          "error",
-          "message"
-        ],
-        "type": "object",
-        "properties": {
-          "error": {
-            "type": "integer",
-            "format": "int32"
+            "title": "Metadata",
+            "description": "Additional metadata for the agent"
           },
-          "message": {
-            "type": "string"
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id",
+            "description": "Unique identifier for the agent"
+          },
+          "template_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Template Id",
+            "description": "ID of the template this agent was created from"
+          },
+          "organization_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Organization Id",
+            "description": "ID of the organization that owns this agent"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "description": "Current status of the agent (active, inactive, etc)"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At",
+            "description": "When the agent was created"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updated At",
+            "description": "When the agent was last updated"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "configuration",
+          "id",
+          "template_id",
+          "organization_id",
+          "status",
+          "created_at",
+          "updated_at"
+        ],
+        "title": "Agent",
+        "example": {
+          "configuration": {
+            "language": "English",
+            "team_size": 5,
+            "tone": "Professional"
+          },
+          "created_at": "2023-01-01T00:00:00Z",
+          "description": "Customized sales assistant for my team",
+          "id": "123e4567-e89b-12d3-a456-426614174000",
+          "metadata": { "created_by": "admin", "updated_by": "admin" },
+          "name": "My Sales Assistant",
+          "organization_id": "123e4567-e89b-12d3-a456-426614174000",
+          "status": "active",
+          "template_id": "123e4567-e89b-12d3-a456-426614174000",
+          "updated_at": "2023-01-01T00:00:00Z"
+        }
+      },
+      "Agent-Output": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name",
+            "description": "Name of the agent"
+          },
+          "description": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Description",
+            "description": "Description of the agent's purpose and capabilities"
+          },
+          "configuration": {
+            "$ref": "#/components/schemas/AgentConfig",
+            "description": "Agent-specific configuration settings"
+          },
+          "avatar_url": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Avatar Url",
+            "description": "URL of the agent's avatar image"
+          },
+          "metadata": {
+            "type": "object",
+            "title": "Metadata",
+            "description": "Additional metadata for the agent"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id",
+            "description": "Unique identifier for the agent"
+          },
+          "template_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Template Id",
+            "description": "ID of the template this agent was created from"
+          },
+          "organization_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Organization Id",
+            "description": "ID of the organization that owns this agent"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "description": "Current status of the agent (active, inactive, etc)"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At",
+            "description": "When the agent was created"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updated At",
+            "description": "When the agent was last updated"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "configuration",
+          "id",
+          "template_id",
+          "organization_id",
+          "status",
+          "created_at",
+          "updated_at"
+        ],
+        "title": "Agent",
+        "example": {
+          "configuration": {
+            "language": "English",
+            "team_size": 5,
+            "tone": "Professional"
+          },
+          "created_at": "2023-01-01T00:00:00Z",
+          "description": "Customized sales assistant for my team",
+          "id": "123e4567-e89b-12d3-a456-426614174000",
+          "metadata": { "created_by": "admin", "updated_by": "admin" },
+          "name": "My Sales Assistant",
+          "organization_id": "123e4567-e89b-12d3-a456-426614174000",
+          "status": "active",
+          "template_id": "123e4567-e89b-12d3-a456-426614174000",
+          "updated_at": "2023-01-01T00:00:00Z"
+        }
+      },
+      "AgentConfig": {
+        "properties": {
+          "role": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Role",
+            "description": "The specific role/job title of the agent"
+          },
+          "goal": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Goal",
+            "description": "Primary objective/purpose of the agent"
+          },
+          "backstory": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Backstory",
+            "description": "Background story and context for the agent"
+          },
+          "tone": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Tone",
+            "description": "The emotional tone of the agent's responses"
+          },
+          "communication_style": {
+            "$ref": "#/components/schemas/CommunicationStyle",
+            "description": "How the agent communicates with others",
+            "default": "formal"
+          },
+          "personality_traits": {
+            "items": { "type": "string" },
+            "type": "array",
+            "title": "Personality Traits",
+            "description": "Key personality characteristics"
+          },
+          "expertise_level": {
+            "$ref": "#/components/schemas/Expertise",
+            "description": "Level of expertise in the agent's domain",
+            "default": "intermediate"
+          },
+          "core_capabilities": {
+            "items": { "type": "string" },
+            "type": "array",
+            "title": "Core Capabilities",
+            "description": "List of primary skills and capabilities"
+          },
+          "knowledge_domains": {
+            "items": { "type": "string" },
+            "type": "array",
+            "title": "Knowledge Domains",
+            "description": "Specific areas of knowledge"
+          },
+          "independence_level": {
+            "type": "number",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Independence Level",
+            "description": "How independently the agent makes decisions (0-1)",
+            "default": 0.5
+          },
+          "delegation_tendency": {
+            "type": "number",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Delegation Tendency",
+            "description": "Likelihood to delegate tasks to other agents (0-1)",
+            "default": 0.3
+          },
+          "use_streaming": {
+            "type": "boolean",
+            "title": "Use Streaming",
+            "description": "Whether to use streaming LLM service instead of CrewAI for message processing",
+            "default": false
+          },
+          "collaboration_style": {
+            "additionalProperties": { "type": "number" },
+            "type": "object",
+            "title": "Collaboration Style",
+            "description": "Weights for different collaboration approaches"
+          },
+          "preferred_teammates": {
+            "items": { "type": "string" },
+            "type": "array",
+            "title": "Preferred Teammates",
+            "description": "List of agent roles this agent works best with"
+          },
+          "response_length": {
+            "type": "string",
+            "title": "Response Length",
+            "description": "Preferred length of responses (brief/moderate/detailed)",
+            "default": "moderate"
+          },
+          "memory_retention": {
+            "type": "integer",
+            "minimum": 1.0,
+            "title": "Memory Retention",
+            "description": "Number of past interactions to consider",
+            "default": 5
+          },
+          "max_iterations": {
+            "type": "integer",
+            "title": "Max Iterations",
+            "description": "Maximum number of iteration attempts for a task",
+            "default": 5
+          },
+          "timeout_seconds": {
+            "anyOf": [{ "type": "integer" }, { "type": "null" }],
+            "title": "Timeout Seconds",
+            "description": "Maximum time allowed for task completion"
+          },
+          "tools": {
+            "items": { "type": "string" },
+            "type": "array",
+            "title": "Tools",
+            "description": "List of tool names this agent can use"
+          },
+          "custom_parameters": {
+            "type": "object",
+            "title": "Custom Parameters",
+            "description": "Additional custom configuration parameters"
+          }
+        },
+        "type": "object",
+        "title": "AgentConfig"
+      },
+      "AgentCreate": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name",
+            "description": "Name of the agent"
+          },
+          "description": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Description",
+            "description": "Description of the agent's purpose and capabilities"
+          },
+          "configuration": {
+            "$ref": "#/components/schemas/AgentConfig",
+            "description": "Agent-specific configuration settings"
+          },
+          "avatar_url": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Avatar Url",
+            "description": "URL of the agent's avatar image"
+          },
+          "metadata": {
+            "type": "object",
+            "title": "Metadata",
+            "description": "Additional metadata for the agent"
+          },
+          "template_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Template Id",
+            "description": "ID of the template to create agent from"
+          }
+        },
+        "type": "object",
+        "required": ["name", "configuration", "template_id"],
+        "title": "AgentCreate",
+        "example": {
+          "avatar_url": "https://example.com/avatar.jpg",
+          "configuration": {
+            "language": "English",
+            "team_size": 5,
+            "tone": "Professional"
+          },
+          "description": "Customized sales assistant for my team",
+          "metadata": { "created_by": "admin", "updated_by": "admin" },
+          "name": "My Sales Assistant",
+          "template_id": "123e4567-e89b-12d3-a456-426614174000"
+        }
+      },
+      "AgentFile": {
+        "properties": {
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "updated_at": {
+            "anyOf": [
+              { "type": "string", "format": "date-time" },
+              { "type": "null" }
+            ],
+            "title": "Updated At"
+          },
+          "id": { "type": "string", "format": "uuid", "title": "Id" },
+          "agent_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Agent Id"
+          },
+          "organization_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Organization Id"
+          },
+          "name": { "type": "string", "title": "Name" },
+          "bucket_path": { "type": "string", "title": "Bucket Path" },
+          "size": {
+            "anyOf": [{ "type": "integer" }, { "type": "null" }],
+            "title": "Size"
+          },
+          "mime_type": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Mime Type"
+          },
+          "metadata": { "type": "object", "title": "Metadata" }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "agent_id",
+          "organization_id",
+          "name",
+          "bucket_path",
+          "size",
+          "mime_type"
+        ],
+        "title": "AgentFile"
+      },
+      "AgentTemplate-Input": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name",
+            "description": "Name of the agent"
+          },
+          "description": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Description",
+            "description": "Description of the agent's purpose and capabilities"
+          },
+          "configuration": {
+            "$ref": "#/components/schemas/AgentConfig",
+            "description": "Agent-specific configuration settings"
+          },
+          "avatar_url": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Avatar Url",
+            "description": "URL of the agent's avatar image"
+          },
+          "metadata": {
+            "type": "object",
+            "title": "Metadata",
+            "description": "Additional metadata for the agent"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id",
+            "description": "Unique identifier for the agent template"
+          },
+          "category": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Category",
+            "description": "Category of the agent template (general, sales, support, marketing, custom)"
+          },
+          "title": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Title",
+            "description": "Title of the agent template"
+          },
+          "flows": {
+            "anyOf": [
+              {
+                "items": { "$ref": "#/components/schemas/Flow" },
+                "type": "array"
+              },
+              { "type": "null" }
+            ],
+            "title": "Flows",
+            "description": "Associated flows for this template"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At",
+            "description": "When the template was created"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updated At",
+            "description": "When the template was last updated"
+          }
+        },
+        "type": "object",
+        "required": ["name", "configuration", "id", "created_at", "updated_at"],
+        "title": "AgentTemplate",
+        "example": {
+          "avatar_url": "https://example.com/avatar.png",
+          "category": "sales",
+          "configuration": { "language": "English", "tone": "Professional" },
+          "created_at": "2023-01-01T00:00:00Z",
+          "description": "Template for creating sales assistant agents",
+          "flows": [
+            {
+              "configuration": {},
+              "description": "Qualifies sales leads",
+              "id": "123e4567-e89b-12d3-a456-426614174001",
+              "name": "Lead Qualification",
+              "slug": "lead-qualification"
+            }
+          ],
+          "id": "123e4567-e89b-12d3-a456-426614174000",
+          "metadata": { "created_by": "admin", "updated_by": "admin" },
+          "name": "Sales Assistant Template",
+          "title": "AI Sales Assistant",
+          "updated_at": "2023-01-01T00:00:00Z"
+        }
+      },
+      "AgentTemplate-Output": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name",
+            "description": "Name of the agent"
+          },
+          "description": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Description",
+            "description": "Description of the agent's purpose and capabilities"
+          },
+          "configuration": {
+            "$ref": "#/components/schemas/AgentConfig",
+            "description": "Agent-specific configuration settings"
+          },
+          "avatar_url": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Avatar Url",
+            "description": "URL of the agent's avatar image"
+          },
+          "metadata": {
+            "type": "object",
+            "title": "Metadata",
+            "description": "Additional metadata for the agent"
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id",
+            "description": "Unique identifier for the agent template"
+          },
+          "category": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Category",
+            "description": "Category of the agent template (general, sales, support, marketing, custom)"
+          },
+          "title": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Title",
+            "description": "Title of the agent template"
+          },
+          "flows": {
+            "anyOf": [
+              {
+                "items": { "$ref": "#/components/schemas/Flow" },
+                "type": "array"
+              },
+              { "type": "null" }
+            ],
+            "title": "Flows",
+            "description": "Associated flows for this template"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At",
+            "description": "When the template was created"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updated At",
+            "description": "When the template was last updated"
+          }
+        },
+        "type": "object",
+        "required": ["name", "configuration", "id", "created_at", "updated_at"],
+        "title": "AgentTemplate",
+        "example": {
+          "avatar_url": "https://example.com/avatar.png",
+          "category": "sales",
+          "configuration": { "language": "English", "tone": "Professional" },
+          "created_at": "2023-01-01T00:00:00Z",
+          "description": "Template for creating sales assistant agents",
+          "flows": [
+            {
+              "configuration": {},
+              "description": "Qualifies sales leads",
+              "id": "123e4567-e89b-12d3-a456-426614174001",
+              "name": "Lead Qualification",
+              "slug": "lead-qualification"
+            }
+          ],
+          "id": "123e4567-e89b-12d3-a456-426614174000",
+          "metadata": { "created_by": "admin", "updated_by": "admin" },
+          "name": "Sales Assistant Template",
+          "title": "AI Sales Assistant",
+          "updated_at": "2023-01-01T00:00:00Z"
+        }
+      },
+      "AgentUpdate": {
+        "properties": {
+          "name": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Name",
+            "description": "New name for the agent"
+          },
+          "description": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Description",
+            "description": "New description for the agent"
+          },
+          "configuration": {
+            "anyOf": [
+              { "$ref": "#/components/schemas/AgentConfig" },
+              { "type": "null" }
+            ],
+            "description": "Updated configuration settings"
+          },
+          "status": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Status",
+            "description": "New status for the agent"
+          },
+          "avatar_url": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Avatar Url",
+            "description": "New avatar URL for the agent"
+          },
+          "metadata": {
+            "anyOf": [{ "type": "object" }, { "type": "null" }],
+            "title": "Metadata",
+            "description": "Updated metadata for the agent"
+          }
+        },
+        "type": "object",
+        "title": "AgentUpdate",
+        "example": {
+          "configuration": {
+            "communication_style": "FORMAL",
+            "core_capabilities": [
+              "enterprise sales",
+              "negotiation",
+              "solution selling"
+            ],
+            "expertise_level": "EXPERT",
+            "goal": "Drive enterprise sales",
+            "knowledge_domains": [
+              "enterprise sales",
+              "B2B",
+              "solution architecture"
+            ],
+            "personality_traits": ["strategic", "persuasive", "consultative"],
+            "role": "Senior Sales Representative",
+            "tone": "Professional"
+          },
+          "description": "Updated description",
+          "metadata": { "updated_by": "admin" },
+          "name": "Updated Sales Assistant",
+          "status": "inactive"
+        }
+      },
+      "ApiKey": {
+        "properties": {
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "updated_at": {
+            "anyOf": [
+              { "type": "string", "format": "date-time" },
+              { "type": "null" }
+            ],
+            "title": "Updated At"
+          },
+          "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "API Key ID"
+          },
+          "organization_id": {
+            "type": "string",
+            "title": "Organization Id",
+            "description": "Organization ID"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name",
+            "description": "API Key name"
+          },
+          "key": {
+            "type": "string",
+            "title": "Key",
+            "description": "Hashed API Key"
+          },
+          "scopes": {
+            "items": { "$ref": "#/components/schemas/ApiKeyScope" },
+            "type": "array",
+            "title": "Scopes",
+            "description": "API Key scopes"
+          },
+          "expires_at": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Expires At",
+            "description": "API Key expiration date"
+          },
+          "created_by": {
+            "type": "string",
+            "title": "Created By",
+            "description": "User ID who created the key"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "organization_id",
+          "name",
+          "key",
+          "scopes",
+          "created_by"
+        ],
+        "title": "ApiKey"
+      },
+      "ApiKeyScope": {
+        "type": "string",
+        "enum": [
+          "crews:read",
+          "crews:write",
+          "crews:execute",
+          "analytics:read"
+        ],
+        "title": "ApiKeyScope"
+      },
+      "Body_upload_agent_file_api_v1_agents__agent_id__files_post": {
+        "properties": {
+          "file": { "type": "string", "format": "binary", "title": "File" }
+        },
+        "type": "object",
+        "required": ["file"],
+        "title": "Body_upload_agent_file_api_v1_agents__agent_id__files_post"
+      },
+      "ChatMessage": {
+        "properties": {
+          "id": {
+            "anyOf": [
+              { "type": "string", "format": "uuid" },
+              { "type": "null" }
+            ],
+            "title": "Id"
+          },
+          "thread_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Thread Id"
+          },
+          "content": { "type": "string", "title": "Content" },
+          "role": {
+            "type": "string",
+            "pattern": "^(user|assistant|system)$",
+            "title": "Role"
+          },
+          "tool_calls": {
+            "anyOf": [
+              {
+                "items": { "$ref": "#/components/schemas/ToolCall" },
+                "type": "array"
+              },
+              { "type": "null" }
+            ],
+            "title": "Tool Calls"
+          },
+          "metadata": { "type": "object", "title": "Metadata" },
+          "created_at": {
+            "anyOf": [
+              { "type": "string", "format": "date-time" },
+              { "type": "null" }
+            ],
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": ["thread_id", "content", "role"],
+        "title": "ChatMessage",
+        "description": "Model for individual chat messages."
+      },
+      "ChatMessageCreate": {
+        "properties": {
+          "content": { "type": "string", "title": "Content" },
+          "role": {
+            "type": "string",
+            "pattern": "^(user|assistant|system)$",
+            "title": "Role"
+          },
+          "metadata": { "type": "object", "title": "Metadata" }
+        },
+        "type": "object",
+        "required": ["content", "role"],
+        "title": "ChatMessageCreate",
+        "description": "Model for creating a new chat message."
+      },
+      "ChatThread": {
+        "properties": {
+          "id": {
+            "anyOf": [
+              { "type": "string", "format": "uuid" },
+              { "type": "null" }
+            ],
+            "title": "Id"
+          },
+          "agent_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Agent Id"
+          },
+          "user_id": { "type": "string", "format": "uuid", "title": "User Id" },
+          "title": { "type": "string", "title": "Title" },
+          "metadata": { "type": "object", "title": "Metadata" },
+          "created_at": {
+            "anyOf": [
+              { "type": "string", "format": "date-time" },
+              { "type": "null" }
+            ],
+            "title": "Created At"
+          },
+          "updated_at": {
+            "anyOf": [
+              { "type": "string", "format": "date-time" },
+              { "type": "null" }
+            ],
+            "title": "Updated At"
+          },
+          "messages": {
+            "anyOf": [
+              {
+                "items": { "$ref": "#/components/schemas/ChatMessage" },
+                "type": "array"
+              },
+              { "type": "null" }
+            ],
+            "title": "Messages"
+          }
+        },
+        "type": "object",
+        "required": ["agent_id", "user_id", "title"],
+        "title": "ChatThread",
+        "description": "Model for chat threads."
+      },
+      "ChatThreadCreate": {
+        "properties": {
+          "agent_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Agent Id"
+          },
+          "title": { "type": "string", "title": "Title" },
+          "metadata": { "type": "object", "title": "Metadata" }
+        },
+        "type": "object",
+        "required": ["agent_id", "title"],
+        "title": "ChatThreadCreate",
+        "description": "Model for creating a new chat thread."
+      },
+      "CommunicationStyle": {
+        "type": "string",
+        "enum": ["formal", "casual", "technical", "empathetic", "direct"],
+        "title": "CommunicationStyle"
+      },
+      "Contact": {
+        "properties": {
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "updated_at": {
+            "anyOf": [
+              { "type": "string", "format": "date-time" },
+              { "type": "null" }
+            ],
+            "title": "Updated At"
+          },
+          "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "Contact ID"
+          },
+          "organization_id": { "type": "string", "title": "Organization Id" },
+          "account_id": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Account Id"
+          },
+          "first_name": { "type": "string", "title": "First Name" },
+          "last_name": { "type": "string", "title": "Last Name" },
+          "email": { "type": "string", "title": "Email" },
+          "phone": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Phone"
+          },
+          "title": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Title"
+          },
+          "hubspot_id": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Hubspot Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "organization_id",
+          "first_name",
+          "last_name",
+          "email"
+        ],
+        "title": "Contact"
+      },
+      "CreateToolCategoryRequest": {
+        "properties": {
+          "name": { "type": "string", "title": "Name" },
+          "description": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Description"
+          },
+          "icon": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Icon"
+          }
+        },
+        "type": "object",
+        "required": ["name"],
+        "title": "CreateToolCategoryRequest"
+      },
+      "CreateToolRequest": {
+        "properties": {
+          "name": { "type": "string", "title": "Name" },
+          "category_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Category Id"
+          },
+          "description": { "type": "string", "title": "Description" },
+          "integration_type": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Integration Type"
+          },
+          "version": {
+            "type": "string",
+            "title": "Version",
+            "default": "1.0.0"
+          },
+          "python_module_path": {
+            "type": "string",
+            "title": "Python Module Path"
+          },
+          "python_class_name": {
+            "type": "string",
+            "title": "Python Class Name"
+          },
+          "python_method_name": {
+            "type": "string",
+            "title": "Python Method Name"
+          },
+          "parameters": {
+            "anyOf": [
+              {
+                "items": { "$ref": "#/components/schemas/ToolParameter" },
+                "type": "array"
+              },
+              { "type": "null" }
+            ],
+            "title": "Parameters"
+          },
+          "return_type": {
+            "anyOf": [
+              { "$ref": "#/components/schemas/ToolReturnType" },
+              { "type": "null" }
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "category_id",
+          "description",
+          "python_module_path",
+          "python_class_name",
+          "python_method_name"
+        ],
+        "title": "CreateToolRequest"
+      },
+      "EnableToolRequest": {
+        "properties": {
+          "tool_id": { "type": "string", "format": "uuid", "title": "Tool Id" },
+          "configuration": {
+            "anyOf": [{ "type": "object" }, { "type": "null" }],
+            "title": "Configuration"
+          }
+        },
+        "type": "object",
+        "required": ["tool_id"],
+        "title": "EnableToolRequest"
+      },
+      "Expertise": {
+        "type": "string",
+        "enum": ["novice", "intermediate", "expert", "specialist"],
+        "title": "Expertise"
+      },
+      "FileSearchResult": {
+        "properties": {
+          "file": { "$ref": "#/components/schemas/AgentFile" },
+          "chunk_text": { "type": "string", "title": "Chunk Text" },
+          "similarity": { "type": "number", "title": "Similarity" }
+        },
+        "type": "object",
+        "required": ["file", "chunk_text", "similarity"],
+        "title": "FileSearchResult"
+      },
+      "Flow": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id",
+            "description": "Unique identifier for the flow"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name",
+            "description": "Name of the flow"
+          },
+          "description": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Description",
+            "description": "Description of what the flow does"
+          },
+          "slug": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Slug",
+            "description": "URL-friendly identifier for the flow"
+          },
+          "configuration": {
+            "type": "object",
+            "title": "Configuration",
+            "description": "Flow-specific configuration"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At",
+            "description": "When the flow was created"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updated At",
+            "description": "When the flow was last updated"
+          }
+        },
+        "type": "object",
+        "required": ["id", "name", "created_at", "updated_at"],
+        "title": "Flow",
+        "example": {
+          "configuration": { "language": "English", "max_duration": 3600 },
+          "created_at": "2023-01-01T00:00:00Z",
+          "description": "Qualify sales leads through conversation",
+          "id": "123e4567-e89b-12d3-a456-426614174000",
+          "name": "Sales Qualification",
+          "slug": "sales-qualification",
+          "updated_at": "2023-01-01T00:00:00Z"
+        }
+      },
+      "FlowExecuteRequest": {
+        "properties": {
+          "flow_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Flow Id",
+            "description": "ID of the flow to execute"
+          },
+          "inputs": {
+            "type": "object",
+            "title": "Inputs",
+            "description": "Input parameters for the flow"
+          }
+        },
+        "type": "object",
+        "required": ["flow_id"],
+        "title": "FlowExecuteRequest",
+        "example": {
+          "flow_id": "123e4567-e89b-12d3-a456-426614174000",
+          "inputs": {
+            "budget": 50000,
+            "company": "Acme Corp",
+            "lead_name": "John Doe"
           }
         }
+      },
+      "FlowExecution": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Id",
+            "description": "Unique identifier for the flow execution"
+          },
+          "flow_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Flow Id",
+            "description": "ID of the flow being executed"
+          },
+          "agent_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Agent Id",
+            "description": "ID of the agent executing the flow"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "description": "Current status of the execution (pending, running, completed, failed)"
+          },
+          "inputs": {
+            "type": "object",
+            "title": "Inputs",
+            "description": "Input parameters provided to the flow"
+          },
+          "outputs": {
+            "type": "object",
+            "title": "Outputs",
+            "description": "Output results from the flow execution"
+          },
+          "started_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Started At",
+            "description": "When the execution started"
+          },
+          "completed_at": {
+            "anyOf": [
+              { "type": "string", "format": "date-time" },
+              { "type": "null" }
+            ],
+            "title": "Completed At",
+            "description": "When the execution completed"
+          },
+          "logs": {
+            "items": { "type": "object" },
+            "type": "array",
+            "title": "Logs",
+            "description": "Execution logs"
+          }
+        },
+        "type": "object",
+        "required": ["id", "flow_id", "agent_id", "status", "started_at"],
+        "title": "FlowExecution",
+        "example": {
+          "agent_id": "123e4567-e89b-12d3-a456-426614174000",
+          "completed_at": "2023-01-01T00:01:00Z",
+          "flow_id": "123e4567-e89b-12d3-a456-426614174000",
+          "id": "123e4567-e89b-12d3-a456-426614174000",
+          "inputs": { "company": "Acme Corp", "lead_name": "John Doe" },
+          "logs": [
+            {
+              "level": "info",
+              "message": "Processing lead information",
+              "timestamp": "2023-01-01T00:00:30Z"
+            }
+          ],
+          "outputs": {
+            "next_steps": "Schedule demo",
+            "qualification_score": 85
+          },
+          "started_at": "2023-01-01T00:00:00Z",
+          "status": "completed"
+        }
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": { "$ref": "#/components/schemas/ValidationError" },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "HubspotConnect": {
+        "properties": { "api_key": { "type": "string", "title": "Api Key" } },
+        "type": "object",
+        "required": ["api_key"],
+        "title": "HubspotConnect"
+      },
+      "Opportunity": {
+        "properties": {
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "updated_at": {
+            "anyOf": [
+              { "type": "string", "format": "date-time" },
+              { "type": "null" }
+            ],
+            "title": "Updated At"
+          },
+          "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "Opportunity ID"
+          },
+          "organization_id": { "type": "string", "title": "Organization Id" },
+          "account_id": { "type": "string", "title": "Account Id" },
+          "name": { "type": "string", "title": "Name" },
+          "amount": { "type": "number", "title": "Amount" },
+          "stage": { "type": "string", "title": "Stage" },
+          "close_date": {
+            "anyOf": [
+              { "type": "string", "format": "date-time" },
+              { "type": "null" }
+            ],
+            "title": "Close Date"
+          },
+          "renewal_date": {
+            "anyOf": [
+              { "type": "string", "format": "date-time" },
+              { "type": "null" }
+            ],
+            "title": "Renewal Date"
+          },
+          "description": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Description"
+          },
+          "hubspot_id": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Hubspot Id"
+          },
+          "probability": {
+            "anyOf": [{ "type": "number" }, { "type": "null" }],
+            "title": "Probability"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "organization_id",
+          "account_id",
+          "name",
+          "amount",
+          "stage"
+        ],
+        "title": "Opportunity"
+      },
+      "Organization": {
+        "properties": {
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "updated_at": {
+            "anyOf": [
+              { "type": "string", "format": "date-time" },
+              { "type": "null" }
+            ],
+            "title": "Updated At"
+          },
+          "name": { "type": "string", "title": "Name" },
+          "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "Organization ID"
+          },
+          "domains": {
+            "items": { "type": "string" },
+            "type": "array",
+            "title": "Domains"
+          }
+        },
+        "type": "object",
+        "required": ["name", "id"],
+        "title": "Organization"
+      },
+      "OrganizationCreate": {
+        "properties": { "name": { "type": "string", "title": "Name" } },
+        "type": "object",
+        "required": ["name"],
+        "title": "OrganizationCreate"
+      },
+      "OrganizationDomain": {
+        "properties": {
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "updated_at": {
+            "anyOf": [
+              { "type": "string", "format": "date-time" },
+              { "type": "null" }
+            ],
+            "title": "Updated At"
+          },
+          "id": { "type": "string", "title": "Id", "description": "Domain ID" },
+          "organization_id": {
+            "type": "string",
+            "title": "Organization Id",
+            "description": "Organization ID"
+          },
+          "domain": {
+            "type": "string",
+            "title": "Domain",
+            "description": "Domain name"
+          },
+          "verified": {
+            "type": "boolean",
+            "title": "Verified",
+            "description": "Whether the domain is verified",
+            "default": false
+          }
+        },
+        "type": "object",
+        "required": ["id", "organization_id", "domain"],
+        "title": "OrganizationDomain"
+      },
+      "OrganizationMember": {
+        "properties": {
+          "user_id": {
+            "type": "string",
+            "title": "User Id",
+            "description": "User ID"
+          },
+          "organization_id": {
+            "type": "string",
+            "title": "Organization Id",
+            "description": "Organization ID"
+          },
+          "role": {
+            "$ref": "#/components/schemas/UserRole",
+            "description": "User role in the organization"
+          },
+          "created_at": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Created At",
+            "description": "Creation timestamp"
+          }
+        },
+        "type": "object",
+        "required": ["user_id", "organization_id", "role"],
+        "title": "OrganizationMember",
+        "description": "Organization member model."
+      },
+      "SignInRequest": {
+        "properties": {
+          "email": { "type": "string", "title": "Email" },
+          "password": { "type": "string", "title": "Password" }
+        },
+        "type": "object",
+        "required": ["email", "password"],
+        "title": "SignInRequest"
+      },
+      "SignUpRequest": {
+        "properties": {
+          "email": { "type": "string", "title": "Email" },
+          "password": { "type": "string", "title": "Password" }
+        },
+        "type": "object",
+        "required": ["email", "password"],
+        "title": "SignUpRequest"
+      },
+      "Ticket": {
+        "properties": {
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "updated_at": {
+            "anyOf": [
+              { "type": "string", "format": "date-time" },
+              { "type": "null" }
+            ],
+            "title": "Updated At"
+          },
+          "id": { "type": "string", "title": "Id", "description": "Ticket ID" },
+          "requestor_email": { "type": "string", "title": "Requestor Email" },
+          "submitter_email": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Submitter Email"
+          },
+          "account_id": {
+            "anyOf": [{ "type": "integer" }, { "type": "null" }],
+            "title": "Account Id"
+          },
+          "ai_generated_title": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Ai Generated Title"
+          },
+          "description": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Description"
+          },
+          "ai_generated_summary": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Ai Generated Summary"
+          },
+          "status_id": { "type": "integer", "title": "Status Id" },
+          "priority_id": { "type": "integer", "title": "Priority Id" },
+          "type_id": {
+            "anyOf": [{ "type": "integer" }, { "type": "null" }],
+            "title": "Type Id"
+          },
+          "assigned_agent_id": {
+            "anyOf": [{ "type": "integer" }, { "type": "null" }],
+            "title": "Assigned Agent Id"
+          },
+          "is_private": {
+            "type": "boolean",
+            "title": "Is Private",
+            "default": false
+          },
+          "is_draft": {
+            "type": "boolean",
+            "title": "Is Draft",
+            "default": false
+          },
+          "ticket_id": { "type": "integer", "title": "Ticket Id" },
+          "team_id": { "type": "integer", "title": "Team Id" },
+          "title": { "type": "string", "title": "Title" },
+          "title_metadata": {
+            "anyOf": [{ "type": "object" }, { "type": "null" }],
+            "title": "Title Metadata"
+          },
+          "archived_at": {
+            "anyOf": [
+              { "type": "string", "format": "date-time" },
+              { "type": "null" }
+            ],
+            "title": "Archived At"
+          },
+          "deleted_at": {
+            "anyOf": [
+              { "type": "string", "format": "date-time" },
+              { "type": "null" }
+            ],
+            "title": "Deleted At"
+          },
+          "metadata": {
+            "anyOf": [{ "type": "object" }, { "type": "null" }],
+            "title": "Metadata"
+          },
+          "due_date": {
+            "anyOf": [
+              { "type": "string", "format": "date-time" },
+              { "type": "null" }
+            ],
+            "title": "Due Date"
+          },
+          "is_escalated": {
+            "type": "boolean",
+            "title": "Is Escalated",
+            "default": false
+          },
+          "story_points": {
+            "anyOf": [{ "type": "integer" }, { "type": "null" }],
+            "title": "Story Points"
+          },
+          "parent_team_id": {
+            "anyOf": [{ "type": "integer" }, { "type": "null" }],
+            "title": "Parent Team Id"
+          },
+          "organization_id": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Organization Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "requestor_email",
+          "status_id",
+          "priority_id",
+          "ticket_id",
+          "team_id",
+          "title"
+        ],
+        "title": "Ticket"
+      },
+      "ToolCall": {
+        "properties": {
+          "tool_name": { "type": "string", "title": "Tool Name" },
+          "arguments": { "type": "object", "title": "Arguments" },
+          "result": {
+            "anyOf": [{ "type": "object" }, { "type": "null" }],
+            "title": "Result"
+          },
+          "error": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Error"
+          },
+          "start_time": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Start Time"
+          },
+          "end_time": {
+            "anyOf": [
+              { "type": "string", "format": "date-time" },
+              { "type": "null" }
+            ],
+            "title": "End Time"
+          }
+        },
+        "type": "object",
+        "required": ["tool_name", "arguments", "start_time"],
+        "title": "ToolCall",
+        "description": "Model for tool/function calls made during chat."
+      },
+      "ToolParameter": {
+        "properties": {
+          "name": { "type": "string", "title": "Name" },
+          "description": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Description"
+          },
+          "type": { "type": "string", "title": "Type" },
+          "required": {
+            "type": "boolean",
+            "title": "Required",
+            "default": false
+          },
+          "default": {
+            "anyOf": [{ "type": "object" }, { "type": "null" }],
+            "title": "Default"
+          },
+          "validation_schema": {
+            "anyOf": [{ "type": "object" }, { "type": "null" }],
+            "title": "Validation Schema"
+          }
+        },
+        "type": "object",
+        "required": ["name", "type"],
+        "title": "ToolParameter"
+      },
+      "ToolResponse": {
+        "properties": {
+          "id": { "type": "string", "format": "uuid", "title": "Id" },
+          "name": { "type": "string", "title": "Name" },
+          "description": { "type": "string", "title": "Description" },
+          "category_id": {
+            "type": "string",
+            "format": "uuid",
+            "title": "Category Id"
+          },
+          "category": { "type": "object", "title": "Category" },
+          "integration_type": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Integration Type"
+          },
+          "version": { "type": "string", "title": "Version" },
+          "python_module_path": {
+            "type": "string",
+            "title": "Python Module Path"
+          },
+          "python_class_name": {
+            "type": "string",
+            "title": "Python Class Name"
+          },
+          "python_method_name": {
+            "type": "string",
+            "title": "Python Method Name"
+          },
+          "parameters": {
+            "anyOf": [
+              {
+                "items": { "$ref": "#/components/schemas/ToolParameter" },
+                "type": "array"
+              },
+              { "type": "null" }
+            ],
+            "title": "Parameters"
+          },
+          "return_type": {
+            "anyOf": [
+              { "$ref": "#/components/schemas/ToolReturnType" },
+              { "type": "null" }
+            ]
+          },
+          "is_active": {
+            "type": "boolean",
+            "title": "Is Active",
+            "default": true
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "description",
+          "category_id",
+          "category",
+          "version",
+          "python_module_path",
+          "python_class_name",
+          "python_method_name"
+        ],
+        "title": "ToolResponse"
+      },
+      "ToolReturnType": {
+        "properties": {
+          "description": {
+            "anyOf": [{ "type": "string" }, { "type": "null" }],
+            "title": "Description"
+          },
+          "schema": { "type": "object", "title": "Schema" },
+          "example": {
+            "anyOf": [{ "type": "object" }, { "type": "null" }],
+            "title": "Example"
+          }
+        },
+        "type": "object",
+        "title": "ToolReturnType"
+      },
+      "UserOrganizationCreate": {
+        "properties": {
+          "email": { "type": "string", "title": "Email" },
+          "userId": { "type": "string", "title": "Userid" }
+        },
+        "type": "object",
+        "required": ["email", "userId"],
+        "title": "UserOrganizationCreate"
+      },
+      "UserRole": {
+        "type": "string",
+        "enum": ["owner", "admin", "member"],
+        "title": "UserRole"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": { "anyOf": [{ "type": "string" }, { "type": "integer" }] },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": { "type": "string", "title": "Message" },
+          "type": { "type": "string", "title": "Error Type" }
+        },
+        "type": "object",
+        "required": ["loc", "msg", "type"],
+        "title": "ValidationError"
       }
     },
-    "securitySchemes": {
-      "bearerAuth": {
-        "type": "http",
-        "scheme": "bearer"
-      }
+    "securitySchemes": { "HTTPBearer": { "type": "http", "scheme": "bearer" } }
+  },
+  "tags": [
+    { "name": "Tools", "description": "Tool management endpoints" },
+    { "name": "CRM", "description": "CRM integration endpoints" },
+    { "name": "Agents", "description": "Agent management endpoints" },
+    {
+      "name": "Organizations",
+      "description": "Organization management endpoints"
+    },
+    {
+      "name": "Integrations",
+      "description": "Third-party integration endpoints"
     }
-  }
+  ]
 }
