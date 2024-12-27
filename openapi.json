@@ -5,6 +5,16 @@
     "description": "\n    ThenaCrew AI CRM Renewal System\n    \n    An intelligent platform to automate customer renewal insights and communications through multi-agent workflows.\n    \n    Key Features:\n    * AI-powered renewal analysis\n    * Personalized communication generation\n    * Automated opportunity tracking\n    * Multi-agent workflow orchestration\n    ",
     "version": "1.0.0"
   },
+  "servers": [
+    {
+      "url": "https://api.thenacrew.com",
+      "description": "Production server"
+    },
+    {
+      "url": "http://localhost:8000",
+      "description": "Local development server"
+    }
+  ],
   "paths": {
     "/api/v1/auth/signup": {
       "post": {
@@ -2930,7 +2940,7 @@
     },
     "/": {
       "get": {
-        "tags": ["health"],
+        "tags": ["Health"],
         "summary": "Root",
         "description": "Root endpoint to check application health.\n\nReturns:\n    dict: Basic information about the application including name, version and status.",
         "operationId": "root__get",
@@ -4655,6 +4665,7 @@
     {
       "name": "Integrations",
       "description": "Third-party integration endpoints"
-    }
+    },
+    { "name": "Health", "description": "Health check endpoints" }
   ]
 }

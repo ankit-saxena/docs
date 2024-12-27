@@ -1,9 +1,9 @@
 {
   "$schema": "https://mintlify.com/schema.json",
-  "name": "Starter Kit",
+  "name": "ThenaCrew",
   "logo": {
-    "dark": "/logo/dark.svg",
-    "light": "/logo/light.svg"
+    "dark": "/logo/dark.jpeg",
+    "light": "/logo/light.jpeg"
   },
   "favicon": "/favicon.svg",
   "colors": {
@@ -70,11 +70,19 @@
       "pages": ["api-reference/introduction"]
     },
     {
-      "group": "Endpoint Examples",
+      "group": "Tools",
       "pages": [
-        "api-reference/endpoint/get",
-        "api-reference/endpoint/create",
-        "api-reference/endpoint/delete"
+        "api-reference/tools/list-tool-categories",
+        "api-reference/tools/create-tool-category",
+        "api-reference/tools/get-tool-category",
+        "api-reference/tools/list-organization-tools",
+        "api-reference/tools/create-organization-tool",
+        "api-reference/tools/get-organization-tool",
+        "api-reference/tools/update-organization-tool",
+        "api-reference/tools/list-tools",
+        "api-reference/tools/create-tool",
+        "api-reference/tools/get-tool",
+        "api-reference/tools/update-tool"
       ]
     }
   ],
